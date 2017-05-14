@@ -30,6 +30,13 @@ if responsePost.status_code == 202: # everything went well!
     videoIDLocation = responsePost.headers['Operation-Location']
     print videoIDLocation
 
+## Wait a bit, it's processing
+headersGet = dict()
+headersGet['Ocp-Apim-Subscription-Key'] = _key
+
+jsonGet = {}
+paramsGet = urllib.urlencode({})
+
 while True: 
 	time.sleep(4)
 
@@ -39,15 +46,6 @@ jsonObject = json.loads(getResponse.text)
 print jsonObject
 if jsonObject['progress'] == 100.0: 
 	break
-
-## Wait a bit, it's processing
-headersGet = dict()
-headersGet['Ocp-Apim-Subscription-Key'] = _key
-
-jsonGet = {}
-paramsGet = urllib.urlencode({})
-
-
 
 rawData = json.loads(json.loads(getResponse.text)['processingResult'])
 timeScale = rawData['timescale']
