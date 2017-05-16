@@ -48,9 +48,9 @@
 # Load httr package
 loadNamespace("httr")
 # Set an endpoint for Emotion in Video API with 'perFrame' output
-apiUrl <- "https://api.projectoxford.ai/emotion/v1.0/recognizeInVideo?outputStyle=perFrame"
+apiUrl <- "https://westus.api.cognitive.microsoft.com/emotion/v1.0/recognizeInVideo?outputStyle=perFrame"
 # Set your API key for Emotion API
-key <- 'ce9dd5c43c574b93a53d72cf64e9b04b'
+key <- '8fbc154914b9497f8efbf0e45313dea9'
   # Set URL for accessing to the video.
   urlVideo <- 'https://www.dropbox.com/s/zfmaswf8s9c58om/blog2.mp4?dl=1'
 mybody <- list(url = urlVideo)
