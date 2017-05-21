@@ -1,7 +1,7 @@
 # Pakete installieren
 #install.packages('needs')
 library(needs)
-needs(caret)
+needs(caret, car)
 
 # Arbeitsverzeichnis einrichten
 setwd("/Users/juliustroeger/Projekte/")
