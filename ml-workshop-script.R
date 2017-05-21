@@ -26,12 +26,14 @@ d$factor_party <- factor(with(d,ifelse((factor_party <= 5),0,1)))
 variables <- factor_party ~ Wahlbeteiligung + ost_west + Medianeinkommen + Arbeitslosenquote + Ausländeranteil + Mietpreis
 
 # fit <- lm(AfD ~ Wahlbeteiligung + ost_west + Medianeinkommen + Arbeitslosenquote + Ausländeranteil + Mietpreis, data=d)
+# plot(fit)
 # summary(fit)
 # vif(fit) # TO-DO: Wie kann man das interpretieren?
 
 d_clean <- na.omit(d) # NA-Werte löschen (TO-DO: führt zu kleinerem Datensatz. Besser Imputation?)
 
-tc <- trainControl(method = "repeatedcv", number = 10, repeats = 10) # Daten zufällig in zehn ähnlich große Blöcke aufteilen
+set.seed(123)
+tc <- trainControl(method = "repeatedcv", number = 10, repeats = 1) # Daten zufällig in zehn ähnlich große Blöcke aufteilen
 train.rpart <- train(variables, data=d_clean, method="rpart", tuneLength=10, metric="Accuracy", trControl=tc) # Metric "Accuracy" für Classification, "Rsquared" für Regression
 
 plot(train.rpart$finalModel, uniform=TRUE, margin=0.2) # Baum plotten
