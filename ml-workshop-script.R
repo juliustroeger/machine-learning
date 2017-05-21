@@ -6,6 +6,8 @@ needs(caret,car)
 # Arbeitsverzeichnis einrichten
 setwd("/Users/juliustroeger/Projekte/")
 
+# TO-DO: R Notebook bauen
+
 #######################
 # FEATURE ENGINEERING #
 #######################
