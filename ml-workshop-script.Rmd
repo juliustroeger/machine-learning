@@ -1,0 +1,97 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Text
+
+```{r}
+# Pakete installieren
+# install.packages('needs')
+library(needs)
+needs(caret, ggplot2, dplyr)
+```
+
+## Feature Engineering
+
+```{r}
+# Zweitstimmen der Bundestagswahl 2013 mit soziodemographische Daten laden
+d <- read.csv('ml-workshop-daten.csv') 
+
+# Parteistimmen faktorisieren: Hat z.B. die AfD die Fünf-Prozent-Hürde geschafft: Dummyvariable ja = 1, nein = 0)
+d$factor_party <- d$AfD
+d$factor_party <- factor(with(d,ifelse((factor_party <= 5),0,1)))
+d
+```
+
+## Was ist ein Decision Tree / Einführung
+
+So funktionieren die Splits
+
+```{r}
+d %>% ggplot() +
+  geom_bar(aes(ost_west, fill=factor_party))
+
+d %>% filter(ost_west == 'Ost') %>% ggplot() +
+  geom_point(aes(factor_party, Wahlbeteiligung, color=factor_party), alpha = 0.5) +
+  geom_hline(yintercept = 65.58, linetype = 2)
+
+d %>% filter(ost_west == 'West') %>% ggplot() +
+  geom_point(aes(factor_party, Ausländeranteil, color=factor_party), alpha = 0.1) +
+  geom_hline(yintercept = 9.95, linetype = 2)
+
+d %>% filter(ost_west == 'West') %>% ggplot() +
+  geom_point(aes(Arbeitslosenquote, Ausländeranteil, color=factor_party)) +
+  geom_hline(yintercept = 9.95, linetype = 2) +
+  geom_segment(x=7.5, xend=7.5, y = 9.95, yend = 35, linetype = 2)
+
+
+plot(d$Ausländeranteil, d$factor_party, col=d$ost_west)
+```
+
+
+
+## Model Building
+
+```{r}
+variables <- factor_party ~ Wahlbeteiligung + ost_west + Medianeinkommen + Arbeitslosenquote + Ausländeranteil + Mietpreis
+d_clean <- na.omit(d) # NA-Werte löschen (TO-DO: NA Omit auf Spalten, die wir wirklich brauchen)
+```
+
+bla
+
+```{r}
+set.seed(123)
+tc <- trainControl(method = "repeatedcv", number = 10, repeats = 1) # Daten zufällig in zehn ähnlich große Blöcke aufteilen
+train.rpart <- train(variables, data=d_clean, method="rpart", tuneLength=10, metric="Accuracy", trControl=tc) # Metric "Accuracy" für Classification, "Rsquared" für Regression
+```
+
+bla
+
+```{r}
+plot(train.rpart$finalModel, uniform=TRUE, margin=0.2) # Baum plotten
+text(train.rpart$finalModel, use.n=TRUE, all=TRUE, cex=.7) # Text plotten
+```
+
+bla
+
+```{r}
+train.rpart
+varImp(train.rpart) # TO-DO: Warum in umgekehrter Reihenfolge?
+#plot(varImp(train.rpart))
+```
+
+```{r}
+set.seed(123)
+tc <- trainControl(method = "repeatedcv", number = 10, repeats = 1) # Daten zufällig in zehn ähnlich große Blöcke aufteilen
+train.rf <- train(variables, data=d_clean, method="rf", tuneLength=5, metric="Accuracy", trControl=tc) # Metric "Accuracy" für Classification, "Rsquared" für Regression
+```
+
+bla
+
+```{r}
+train.rf
+varImp(train.rf) # TO-DO: Warum in umgekehrter Reihenfolge?
+#plot(varImp(train.rf))
+```
+
