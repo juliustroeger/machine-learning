@@ -3,15 +3,12 @@
 library(needs)
 needs(caret, car)
 
-# Arbeitsverzeichnis einrichten
-setwd("/Users/juliustroeger/Projekte/")
-
 #######################
 # FEATURE ENGINEERING #
 #######################
 
 # Zweitstimmen der Bundestagswahl 2013 mit soziodemographische Daten laden
-d <- read.csv('machine-learning/ml-workshop-daten.csv') 
+d <- read.csv('ml-workshop-daten.csv') 
 
 # Parteistimmen faktorisieren: Hat z.B. die AfD die Fünf-Prozent-Hürde geschafft: Dummyvariable ja = 1, nein = 0)
 d$factor_party <- d$AfD
@@ -21,7 +18,7 @@ d$factor_party <- factor(with(d,ifelse((factor_party <= 5),0,1)))
 # MODEL BUILDING #
 ##################
 
-variables <- factor_party ~ Wahlbeteiligung + ost_west + Medianeinkommen + Arbeitslosenquote + Ausländeranteil + Mietpreis
+variables <- factor_party ~ Wahlbeteiligung + ost_west + Medianeinkommen + Arbeitslosenquote + Ausländeranteil + Mietpreis + Ländlichkeit
 
 # fit <- lm(AfD ~ Wahlbeteiligung + ost_west + Medianeinkommen + Arbeitslosenquote + Ausländeranteil + Mietpreis, data=d)
 # plot(fit)
