@@ -20,7 +20,7 @@ library(gganimate)
 
 ## Daten
 
-Die Daten stammen von der Bundeswahlleitung und vom Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR).
+Die Daten stammen von der Bundeswahlleitung, Correctiv/empirica und vom Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR).
 
 ```{r}
 # Zweitstimmen der Bundestagswahl 2013 und soziodemographische Daten laden
