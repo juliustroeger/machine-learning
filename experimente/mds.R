@@ -1,13 +1,31 @@
 ## MDS
 
-d <- read.csv('machine-learning/ml-workshop-daten.csv') 
-#d <- d[, !(colnames(d) %in% c("Name", "Landbevölkerung", "Landbevölkerung.1", "Ältere.Landbevölkerung", "Jüngere.Dorfbewohner" ))]
-d$Union <- d$CDU + d$CSU
-d <- d[, !(colnames(d) %in% c("Name","KRS","Art","ost_west","CDU","CSU"))]
+# d <- read.csv('machine-learning/ml-workshop-daten.csv') 
+# #d <- d[, !(colnames(d) %in% c("Name", "Landbevölkerung", "Landbevölkerung.1", "Ältere.Landbevölkerung", "Jüngere.Dorfbewohner" ))]
+# d$Union <- d$CDU + d$CSU
+# d <- d[, !(colnames(d) %in% c("Name","KRS","Art","ost_west","CDU","CSU"))]
+# d <- na.omit(d)
+# d_dist <- dist(d) # euclidean distances between the rows
+# fit <- cmdscale(d_dist,eig=TRUE, k=2) # k is the number of dim
+# fit # view results
+
+d <- read.csv('experimente/2013gemeinden.csv')
+d$Union <- d$CDU_rel + d$CSU_rel
 d <- na.omit(d)
-d_dist <- dist(d) # euclidean distances between the rows
+d_selection <- d[,c(37:40,42:65,68)] 
+d_dist <- dist(d_selection) # euclidean distances between the rows
+
 fit <- cmdscale(d_dist,eig=TRUE, k=2) # k is the number of dim
 fit # view results
+save(fit,file="gemeinden_mds.Rda")
+write(fit,file="gemeinden_mds.csv")
+
+# plot solution 
+x <- fit$points[,1]
+y <- fit$points[,2]
+plot(x, y, col = d$ost_west)
+text(x, y, labels = d$Name, cex=.7)
+
 
 # plot solution 
 x <- fit$points[,1]
