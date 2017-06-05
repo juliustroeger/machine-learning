@@ -3,11 +3,11 @@ title: "Machine Learning für Journalisten"
 output: html_notebook
 ---
 
-Dies ist das Praxisbeispiel zum Workshop auf der #NR17 (http://sched.co/AHAe) und zum zugehörigen Blogartikel. Es wird gezeigt, wie ein Entscheidungsbaum auf einem Beispieldatensatz gelernt werden kann. Die Methode ist analog zu [Decision Tree: The Obama-Clinton Divide](http://www.nytimes.com/imagepages/2008/04/16/us/20080416_OBAMA_GRAPHIC.html) wovon das Beispiel inspiriert ist.
+Dies ist das Praxisbeispiel zum #NR17-Workshop (http://sched.co/AHAe) und zum zugehörigen Blogartikel (http://www.digitalerwandel.de/2017/06/09/machine-learning-fuer-journalisten/). Es wird gezeigt, wie ein Decision Tree / Entscheidungsbaum auf einem Beispieldatensatz gelernt werden kann. Die Methode ist analog zu [Decision Tree: The Obama-Clinton Divide](http://www.nytimes.com/imagepages/2008/04/16/us/20080416_OBAMA_GRAPHIC.html) wovon das Beispiel inspiriert ist.
 
 ## Setup
 
-Wir verwenden für das Training und die Evaluation des Baums vor allem [caret](https://github.com/topepo/caret). Dann laden wir noch ein paar Pakete zum Data Wraningling (dplyr), plotten (ggplot2, gganimate) und Algorithmen (rpart, xgboost).
+Wir verwenden für das Training und die Evaluation des Baums vor allem [caret](https://github.com/topepo/caret). Dann laden wir noch ein paar Pakete zum Data Wrangling (dplyr), plotten (ggplot2, gganimate) und Algorithmen (rpart, xgboost).
 
 ```{r, Setup}
 # Pakete installieren
@@ -20,15 +20,15 @@ library(gganimate)
 
 ## Daten
 
-Die Daten stammen TODO...
+Die Daten stammen von der Bundeswahlleitung und vom Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR).
 
 ```{r}
-# Zweitstimmen der Bundestagswahl 2013 mit soziodemographische Daten laden
+# Zweitstimmen der Bundestagswahl 2013 und soziodemographische Daten laden
 d <- read.csv('ml-workshop-daten.csv')
 d
 ```
 
-In unserem Beispiel, wollen wir einen Baum trainieren, der Wahlkreise identifiziert in denen die AfD mehr als Fünf Prozent der zweitstimmen erhält. Dafür benötigen wir eine Dummyvariable `AfD <= 5%`. Oft kodiert man diese explizit mit 1 = `AfD <= 5%` und 0 = `AfD <= 5%`, in R können wir aber einfach einen `factor` mit zwei Ausprägungen erstellen. Wir entfernen danach noch alle Informationen zu den Zweitstimmen aus dem Datensatz und behalten nur noch mögliche Prädiktoren und die Zielvariable `factor_party` übrig.
+In unserem Beispiel, wollen wir einen Baum trainieren, der Wahlkreise identifiziert, in denen die AfD mehr als fünf Prozent der Zweitstimmen erhalten hat. Dafür benötigen wir eine Dummyvariable `AfD <= 5%`. Oft kodiert man diese explizit mit 1 = `AfD <= 5%` und 0 = `AfD <= 5%`, in R können wir aber einfach einen `factor` mit zwei Ausprägungen erstellen. Wir entfernen danach noch alle Informationen zu den Zweitstimmen aus dem Datensatz und behalten nur noch mögliche Prädiktoren und die Zielvariable `factor_party` übrig.
 
 ```{r}
 d$factor_party <- factor(with(d,ifelse((AfD <= 5), "AfD <= 5%", "AfD > 5%")))
@@ -38,7 +38,7 @@ d
 
 ## Was ist ein Decision Tree / Einführung
 
-Wie in [Decision Tree: The Obama-Clinton Divide](http://www.nytimes.com/imagepages/2008/04/16/us/20080416_OBAMA_GRAPHIC.html) wollen wir einen Entscheidungsbaum trainieren. Ein Entscheidungsbaum ist ein Baum in dessen Gabelungen Entscheidungsregeln stehen wie z.B. "Ist das Medianeinkommen >= 2452€". Je nach Antwort geht man nach links oder rechts den Baum weiter bis man in einem Blatt angelangt ist. Im Blatt steht dann die Vorhersage "AfD >= 5%" oder "AfD < 5%".
+Ein Entscheidungsbaum ist ein Baum in dessen Gabelungen Entscheidungsregeln stehen wie z.B. "Ist das Medianeinkommen >= 2452 Euro". Je nach Antwort geht man nach links oder rechts den Baum weiter bis man in einem Blatt angelangt ist. Im Blatt steht dann die Vorhersage "AfD >= 5%" oder "AfD < 5%".
 
 Das könnte zum Beispiel so aussehen:
 ```{r}
@@ -139,7 +139,7 @@ Wir können uns außerdem den Baum ausgeben lassen:
 rpart.plot(train.rpart$finalModel, extra=101)
 ```
 
-`caret` bietet bei Baummodellen außerdem eine Funktion die Wichtigkeit der Merkmale für das Modell grafisch auszugeben:
+`caret` bietet bei Baummodellen außerdem eine Funktion, die Wichtigkeit der Merkmale für das Modell grafisch auszugeben:
 
 ```{r}
 plot(varImp(train.rpart, competes=F))
