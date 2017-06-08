@@ -120,7 +120,7 @@ Nun wollen wir das Modell trainieren. Dafür wählen wir als erstes die Merkmale
 variables <- factor_party ~ Wahlbeteiligung + Medianeinkommen + Arbeitslosenquote + Ausländeranteil + Mietpreis
 # variables <- factor_party ~ Wahlbeteiligung + ost_west + Medianeinkommen + Arbeitslosenquote + Ausländeranteil + Mietpreis
 # variables <- factor_party ~ .
-d_clean <- na.omit(d) %>% select(Wahlbeteiligung:factor_party) # NA-Werte löschen 
+d_clean <- na.omit(d) # NA-Werte löschen 
 ```
 
 Das eigentliche Training findet mit der `train`-Methode aus `caret` statt. Wir initalisieren vorher den Zufallszahlengenerator mittels `set.seed` um reproduzierbare Ergebnisse zu bekommen. Wer legen außerdem Crossvalidation als Evaluationsmethode fest und geben die Anzahl der Hyperparameterkombinationen an, die wir probieren wollen. Hyperparameter sind Modellparameter, die bei Bäumen z.B. festlegen, wie tief der Baum maximal werden darf.
