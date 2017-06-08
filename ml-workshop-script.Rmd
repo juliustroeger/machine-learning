@@ -5,6 +5,11 @@ output: html_notebook
 
 Dies ist das Praxisbeispiel zum #NR17-Workshop (http://sched.co/AHAe) und zum zugehörigen Blogartikel (http://www.digitalerwandel.de/2017/06/09/machine-learning-fuer-journalisten/). Es wird gezeigt, wie ein Decision Tree / Entscheidungsbaum auf einem Beispieldatensatz gelernt werden kann. Die Methode ist analog zu [Decision Tree: The Obama-Clinton Divide](http://www.nytimes.com/imagepages/2008/04/16/us/20080416_OBAMA_GRAPHIC.html) wovon das Beispiel inspiriert ist.
 
+```{r}
+knitr::include_graphics('0416-nat-subOBAMA.jpg')
+```
+
+
 ## Setup
 
 Wir verwenden für das Training und die Evaluation des Baums vor allem [caret](https://github.com/topepo/caret). Dann laden wir noch ein paar Pakete zum Data Wrangling (dplyr), plotten (ggplot2, gganimate) und Algorithmen (rpart, xgboost).
@@ -13,14 +18,14 @@ Wir verwenden für das Training und die Evaluation des Baums vor allem [caret](h
 # Pakete installieren
 # install.packages('needs')
 library(needs)
-needs(caret, ggplot2, plyr, dplyr, rpart, rpart.plot, xgboost, scales, knitr, devtools)
+needs(caret, ggplot2, plyr, dplyr, rpart, rpart.plot, randomForest, gbm, scales, knitr, devtools)
 devtools::install_github("dgrtwo/gganimate")
 library(gganimate)
 ```
 
 ## Daten
 
-Die Daten stammen von der Bundeswahlleitung, Correctiv/empirica und vom Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR).
+Die Daten, Zweitstimmen der Bundestagswahl 2013 und soziodemographische Daten, stammen von der Bundeswahlleitung, Correctiv/empirica und vom Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR).
 
 ```{r}
 # Zweitstimmen der Bundestagswahl 2013 und soziodemographische Daten laden
@@ -44,7 +49,6 @@ Das könnte zum Beispiel so aussehen:
 ```{r}
 knitr::include_graphics('tree.png')
 ```
-
 
 ### Aufteilung der Trainingsdaten
 
@@ -147,19 +151,23 @@ plot(varImp(train.rpart, competes=F))
 
 ## Andere Modelle
 
-Wir haben den Entscheidungsbaum zwar explizit ausgewählt, weil er interpretiertbar ist, wollen jedoch noch kurz zeigen, dass es mit `caret` sehr einfach ist, komplexere Modelle zu verwenden. Die Funktionsaufrufe sind fast identisch. Hier trainieren wir zusätzlich zu einem Entschedungsbaum ein Modell namens [Gradient Boosting Machine]() aus dem [XGBoost-Paket](http://xgboost.readthedocs.io/en/latest/model.html). Dieses hat eine Vielzahl von Hyperparametern und ist nicht mehr so einfach darstellbar und interpretierbar wie ein einzelner Entscheidungsbaum.
+Wir haben den Entscheidungsbaum zwar explizit ausgewählt, weil er interpretiertbar ist, wollen jedoch noch kurz zeigen, dass es mit `caret` sehr einfach ist, komplexere Modelle zu verwenden. Die Funktionsaufrufe sind fast identisch. Hier trainieren wir zusätzlich zu einem Entschedungsbaum ein Modell namens Gradient Boosting Machine. Dieses hat eine Vielzahl von Hyperparametern und ist nicht mehr so einfach darstellbar und interpretierbar wie ein einzelner Entscheidungsbaum. Eine Liste der in Caret verfügbaren Modelle findet sich unter [https://topepo.github.io/caret/available-models.html](https://topepo.github.io/caret/available-models.html).
 
 ```{r}
 variables <- factor_party ~ .
 set.seed(123)
 train.rpart <- train(variables, data=d_clean, method="rpart", tuneLength=10, metric="Accuracy", trControl=tc)
-train.xgbTree <- train(variables, data=d_clean, method="xgbTree", tuneLength=4, metric="Accuracy", trControl=tc)
+train.gbm <- train(variables, data=d_clean, method="gbm", tuneLength=5, metric="Accuracy", trControl=tc, verbose=F)
+# train.rf <- train(variables, data=d_clean, method="rf", tuneLength=5, metric="Accuracy", trControl=tc, verbose=F)
 ```
 
 Die Genauigkeit dieses Modells ist tatsächlich etwas besser, als die eines Entscheidungsbauems.
 
 ```{r}
-summary(resamples(list(CART=train.rpart, XGB=train.xgbTree)))
-bwplot(resamples(list(CART=train.rpart, XGB=train.xgbTree)))
+summary(resamples(list(CART=train.rpart, gbm=train.gbm)))
+```
+
+```{r}
+bwplot(resamples(list(CART=train.rpart, gbm=train.gbm)))
 ```
 
